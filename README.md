@@ -1,4 +1,4 @@
-# Translate-CombPbCorr-to-Python
+# Translate-ComPbCorr-to-Python
 
 Abstract:
 This project is to translate the legacy VBA code in the ComPbCorr software (Andersen, 2002) to Python. 
