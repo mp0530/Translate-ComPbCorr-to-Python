@@ -1,3 +1,8 @@
+# Things to be done in near future: 
+# 1. GUI Design
+# 2. Clean code with Class or Function
+# 3. Started other UserForm
+
 import tkinter as tk
 from tkinter.font import Font
 # ---------- To solve resolution issue in Windows -----------
