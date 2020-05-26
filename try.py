@@ -8,6 +8,7 @@ if __name__ == "__main__":
     if 'win' in sys.platform:
         ctypes.windll.shcore.SetProcessDpiAwareness(1)
 # -----------------------------------------------------------
+
 class UserForm3:
     def __init__(self,master):
         self.UserForm3 = master #create the windows
@@ -42,11 +43,21 @@ class UserForm3:
         corrected ratios are internally consistent. But the error on\n\
         corrected 207Pb/206Pb ratios will appear smaller than on\n\
         the raw ratios!",font = self.font3,fg = "green",bg = "yellow",justify = "left")
-
-        self.checkbox1 = tk.Checkbutton(self.UserForm3,text = "No correction",bg = "yellow",activebackground = "yellow",font = self.font1,fg = "green")
-        self.checkbox2 = tk.Checkbutton(self.UserForm3,text = "Use empirical correction factor",bg = "yellow",activebackground = "yellow",font = self.font1,fg = "green")
-        self.checkbox3 = tk.Checkbutton(self.UserForm3,text = "Use apparent error correlations from GLITTER",bg = "yellow",activebackground = "yellow",font = self.font3,fg = "green")
-        self.checkbox4 = tk.Checkbutton(self.UserForm3,text = "Ignore apparent error correlations from GLITTER",bg = "yellow",activebackground = "yellow",font = self.font3,fg = "green",justify = "left")
+        self.var_chk1 = tk.IntVar()
+        self.var_chk2 = tk.IntVar()
+        self.checkbox1 = tk.Radiobutton(self.UserForm3,text = "No correction",bg = "yellow",
+                                        activebackground = "yellow",font = self.font1,fg = "green",
+                                        variable = self.var_chk1, value = 0)
+        self.checkbox2 = tk.Radiobutton(self.UserForm3,text = "Use empirical correction factor",bg = "yellow",
+                                        activebackground = "yellow",font = self.font1,fg = "green",
+                                        variable = self.var_chk1, value = 1)
+        self.checkbox3 = tk.Radiobutton(self.UserForm3,text = "Use apparent error correlations from GLITTER",
+                                        bg = "yellow",activebackground = "yellow",font = self.font3,fg = "green",
+                                        variable = self.var_chk2, value = 1)
+        self.checkbox4 = tk.Radiobutton(self.UserForm3,text = "Ignore apparent error correlations from GLITTER",
+                                        bg = "yellow",activebackground = "yellow",font = self.font3,fg = "green",
+                                        justify = "left",
+                                        variable = self.var_chk2, value = 0)
 
         self.text1 = tk.Entry(self.UserForm3, width = 5, font=("Helvetica", 18))
         self.text2 = tk.Entry(self.UserForm3, width = 5, font=("Helvetica", 18))
@@ -72,11 +83,12 @@ class UserForm3:
         self.label7.place(relx = 0.5, rely = 0.65, anchor = "n")
         self.ok.place(relx = 0.35, rely = 0.93, anchor = "center")
         self.cancel.place(relx = 0.65, rely = 0.93, anchor = "center")
-        self.UserForm3.mainloop()
+        # self.UserForm3.mainloop()
     def ok(self):
         self.UserForm3.destroy()
         root = tk.Tk()
         app = UserForm1(root)
+
 class UserForm1:
     def __init__(self,master):
         self.UserForm1 = master
@@ -202,7 +214,7 @@ class UserForm4:
         self.text1.place(relx = 0.85, rely = 0.4, anchor = "e")
         self.label2.place(relx = 0.3, rely = 0.65, anchor = "center")
         self.ok.place(relx = 0.9, rely = 0.9, anchor = "se")
-        self.UserForm4.mainloop()
+        # self.UserForm4.mainloop()
 
     def monte(self):
         self.UserForm4.destroy()
@@ -243,7 +255,7 @@ class UserForm2:
         self.label4.place(relx = 0.8, rely = 0.27, anchor = "center")
         self.label5.place(relx = 0.5, rely = 0.4, anchor = "center")
 
-        self.UserForm2.mainloop()
+        # self.UserForm2.mainloop()
 class Main:
     def __init__(self,sheet):
         self.execute(sheet)
@@ -252,8 +264,10 @@ class Main:
             root = tk.Tk()
             app = UserForm1(root)
             root.mainloop()
+
         elif sheet == "input":
             root = tk.Tk()
             app = UserForm3(root)
             root.mainloop()
-x = Main("data")
+
+x = Main("input")
