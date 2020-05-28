@@ -4,16 +4,44 @@ from tkinter import ttk
 # ---------- To solve resolution issue in Windows -----------
 import ctypes
 import sys
+import math
+
 if __name__ == "__main__":
     if 'win' in sys.platform:
         ctypes.windll.shcore.SetProcessDpiAwareness(1)
 # -----------------------------------------------------------
+class globalval:
+    def __init__(self):
+        self.ga = 0
+        self.pb64 = 18.7 - 9.74 * (math.exp(1.55125 * self.ga / 10) - 1)
+        self.pb74 = 15.628 - 9.74 * (math.exp(9.8485 * self.ga / 10) - 1) / 137.88
+        self.pb84 = 38.63 - 36.84 * (math.exp(0.49475 * self.ga / 10) - 1)
 
 class UserForm3:
     def __init__(self,master):
         self.UserForm3 = master #create the windows
         self.UserForm3.config(bg = "yellow")
         self.UserForm3.geometry("500x800")
+        self.str = "\
+        Choosing this option will allow you to specify a constant\n\
+        error correlation coefficient. Error propagation of\n\
+        corrected data will be done accordingly, and errors on\n\
+        corrected 207Pb/206Pb ratios will appear smaller than on\n\
+        the raw ratios!"
+        self.str0 = "\
+        GLITTER commonly reports apparent (spurious) error.\n\
+        Choosing this option will allow you to specify a constant\n\
+        error correlation coefficient. Error propogation of\n\
+        corrected data will be done accordingly, and errors on\n\
+        corrected ratios are internally consistent. But the error on\n\
+        corrected 207Pb/206Pb ratios will appear smaller than on\n\
+        the raw ratios!"
+        self.str1 = "\
+        Choosing this option will allow you to specify a constant\n\
+        error correlation coefficient. Error propagation of\n\
+        corrected data will be done accordingly, and errors on\n\
+        corrected 207Pb/206Pb ratios will appear smaller than on\n\
+        the raw ratios!"
 
         self.font1 = Font(size = 9, weight = "bold")
         self.font2 = Font(size = 9, weight = "bold",slant = "italic")
@@ -35,32 +63,28 @@ class UserForm3:
         trying to plot TW concordias from TW style output.\n\
         These routines do not solve the problem, but have\n\
         been designed to create consistent output.",font = self.font3,fg = "green",bg = "yellow",justify = "left")
-        self.label7 = tk.Label(self.UserForm3,text = "\n\
-        GLITTER commonly reports apparent (spurious) error.\n\
-        Choosing this option will allow you to specify a constant\n\
-        error correlation coefficient. Error propogation of\n\
-        corrected data will be done accordingly, and errors on\n\
-        corrected ratios are internally consistent. But the error on\n\
-        corrected 207Pb/206Pb ratios will appear smaller than on\n\
-        the raw ratios!",font = self.font3,fg = "green",bg = "yellow",justify = "left")
+        self.label7 = tk.Label(self.UserForm3,text= self.str
+                               ,font = self.font3,fg = "green",bg = "yellow",justify = "left")
         self.var_chk1 = tk.IntVar()
         self.var_chk2 = tk.IntVar()
+
         self.checkbox1 = tk.Radiobutton(self.UserForm3,text = "No correction",bg = "yellow",
                                         activebackground = "yellow",font = self.font1,fg = "green",
-                                        variable = self.var_chk1, value = 0)
+                                        variable = self.var_chk1, value = 0, command = self.deselect)
         self.checkbox2 = tk.Radiobutton(self.UserForm3,text = "Use empirical correction factor",bg = "yellow",
                                         activebackground = "yellow",font = self.font1,fg = "green",
-                                        variable = self.var_chk1, value = 1)
+                                        variable = self.var_chk1, value = 1, command = self.deselect)
         self.checkbox3 = tk.Radiobutton(self.UserForm3,text = "Use apparent error correlations from GLITTER",
                                         bg = "yellow",activebackground = "yellow",font = self.font3,fg = "green",
-                                        variable = self.var_chk2, value = 1)
+                                        variable = self.var_chk2, value = 1, command = self.strchange)
         self.checkbox4 = tk.Radiobutton(self.UserForm3,text = "Ignore apparent error correlations from GLITTER",
                                         bg = "yellow",activebackground = "yellow",font = self.font3,fg = "green",
                                         justify = "left",
-                                        variable = self.var_chk2, value = 0)
-
-        self.text1 = tk.Entry(self.UserForm3, width = 5, font=("Helvetica", 18))
-        self.text2 = tk.Entry(self.UserForm3, width = 5, font=("Helvetica", 18))
+                                        variable = self.var_chk2, value = 0, command = self.strchange)
+        self.factor = tk.IntVar()
+        self.factor.set(1)
+        self.text1 = tk.Entry(self.UserForm3, width = 5, font=("Helvetica", 18), state = "disabled",text = self.factor, justify = "center")
+        self.text2 = tk.Entry(self.UserForm3, width = 5, font=("Helvetica", 18), state = "disabled", justify = "center")
 
         self.separator1 = ttk.Separator(self.UserForm3,orient = "horizontal")
         self.separator2 = ttk.Separator(self.UserForm3,orient = "horizontal")
@@ -83,11 +107,30 @@ class UserForm3:
         self.label7.place(relx = 0.5, rely = 0.65, anchor = "n")
         self.ok.place(relx = 0.35, rely = 0.93, anchor = "center")
         self.cancel.place(relx = 0.65, rely = 0.93, anchor = "center")
-        # self.UserForm3.mainloop()
+
     def ok(self):
         self.UserForm3.destroy()
         root = tk.Tk()
         app = UserForm1(root)
+
+    def deselect(self):
+        if self.var_chk1.get() == 0:
+            self.text2.delete(0,"end")
+            self.factor.set(1)
+            self.text1.config(fg = "gray", state = "disabled")
+            self.text2.config(text = "", fg = "gray", state = "disabled")
+        else:
+            self.factor.set(0.85)
+            self.text1.config(fg = "black", state = "normal")
+            self.text2.config(fg = "black", state = "normal")
+            self.text2.insert(0,0.05)
+
+    def strchange(self):
+        if self.var_chk2.get() == 1:
+            self.label7.config(text = self.str0)
+        else:
+            self.label7.config(text = self.str1)
+
 
 class UserForm1:
     def __init__(self,master):
@@ -118,10 +161,25 @@ class UserForm1:
         self.label12 = tk.Label(self.UserForm1,text = "Number of Monte-Carlo trials",font = self.font2,fg = "green",bg = "yellow")
         self.label13 = tk.Label(self.UserForm1,text = "Sigma-level for discordance test (0, 1, 2....)",font = self.font2,fg = "green",bg = "yellow")
 
-        self.text1 = tk.Entry(self.UserForm1,width = 6)
-        self.text2 = tk.Entry(self.UserForm1,width = 7,font=("Helvetica", 12))
-        self.text3 = tk.Entry(self.UserForm1,width = 7,font=("Helvetica", 12))
-        self.text4 = tk.Entry(self.UserForm1,width = 7,font=("Helvetica", 12))
+        self.ga = tk.DoubleVar()
+        self.pb64 = tk.DoubleVar()
+        self.pb74 = tk.DoubleVar()
+        self.pb84 = tk.DoubleVar()
+        self.ga.set(globalval().ga)
+        self.pb64.set(globalval().pb64)
+        self.pb74.set(globalval().pb74)
+        self.pb84.set(globalval().pb84)
+
+        self.text1 = tk.Entry(self.UserForm1,width = 6,font=("Helvetica", 12),justify = "center",
+                              textvariable = self.ga)
+        self.ga.trace("w", self.update)
+
+        self.text2 = tk.Entry(self.UserForm1,width = 7,font=("Helvetica", 12),justify = "center",
+                              textvariable = self.pb64)
+        self.text3 = tk.Entry(self.UserForm1,width = 7,font=("Helvetica", 12),justify = "center",
+                              textvariable = self.pb74)
+        self.text4 = tk.Entry(self.UserForm1,width = 7,font=("Helvetica", 12),justify = "center",
+                              textvariable = self.pb84)
         self.text5 = tk.Entry(self.UserForm1,width = 6)
         self.text6 = tk.Entry(self.UserForm1,width = 5,font=("Helvetica", 15))
         self.text7 = tk.Entry(self.UserForm1,width = 5,font=("Helvetica", 15))
@@ -190,8 +248,14 @@ class UserForm1:
     def from_ok(self):
         root = tk.Tk()
         app = UserForm4(root,True,self.UserForm1)
+
+    def update(self,*args):
+        ga = self.ga.get()
+        self.pb64.set(18.7 - 9.74 * (math.exp(1.55125 * ga / 10) - 1))
+        self.pb74.set(15.628 - 9.74 * (math.exp(9.8485 * ga / 10) - 1) / 137.88)
+        self.pb84.set(38.63 - 36.84 * (math.exp(0.49475 * ga / 10) - 1))
+
 class UserForm4:
-    # def __init__(self, master):
     def __init__(self,master,close,prevmaster):
         self.close = close
         self.prevmaster = prevmaster
@@ -222,6 +286,8 @@ class UserForm4:
             self.prevmaster.destroy()
             root = tk.Tk()
             app = UserForm2(root)
+
+
 class UserForm2:
     def __init__(self,master):
         ga = 100
@@ -256,6 +322,8 @@ class UserForm2:
         self.label5.place(relx = 0.5, rely = 0.4, anchor = "center")
 
         # self.UserForm2.mainloop()
+
+
 class Main:
     def __init__(self,sheet):
         self.execute(sheet)
@@ -269,5 +337,6 @@ class Main:
             root = tk.Tk()
             app = UserForm3(root)
             root.mainloop()
+
 
 x = Main("input")
